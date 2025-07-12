@@ -1,7 +1,7 @@
 import { Montserrat } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
-import coverImg from "../public/images/portraits/cover_image_result.webp"
+import coverImg from "../public/images/covers/DSC_0800.jpg"
 
 const montserratFont = Montserrat({
   subsets: ["latin"],
