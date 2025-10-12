@@ -1,26 +1,25 @@
-import Sport1 from "../../public/images/action/IMG_8714_result.webp"
-import Sport2 from "../../public/images/action/IMG_8751_result.webp"
-import Sport3 from "../../public/images/action/IMG_8792_result.webp"
-import Sport4 from "../../public/images/action/IMG_8827_result.webp"
-import Sport5 from "../../public/images/action/IMG_8862_result.webp"
-import Sport6 from "../../public/images/action/IMG_8878-2_result.webp"
-import Sport7 from "../../public/images/action/IMG_8907_result.webp"
-import Sport8 from "../../public/images/action/IMG_8990_result.webp"
-import Sport9 from "../../public/images/action/IMG_9019_result.webp"
-import Sport10 from "../../public/images/action/IMG_9029_result.webp"
-import Sport11 from "../../public/images/action/IMG_9039_result.webp"
-import Sport12 from "../../public/images/action/IMG_9059_result.webp"
-import Sport13 from "../../public/images/action/IMG_9121_result.webp"
-import Sport14 from "../../public/images/action/IMG_9135_result.webp"
-import Sport15 from "../../public/images/action/IMG_9160_result.webp"
-import Sport16 from "../../public/images/action/IMG_9170_result.webp"
-import Sport17 from "../../public/images/action/IMG_9183_result.webp"
-import Sport18 from "../../public/images/action/IMG_9232_result.webp"
-import Sport19 from "../../public/images/action/IMG_9615_result.webp"
-import Sport20 from "../../public/images/action/IMG_9663_result.webp"
-import Sport21 from "../../public/images/action/IMG_9756_result.webp"
-import Sport22 from "../../public/images/action/action_image_2_result.webp"
-import Sport23 from "../../public/images/action/action_image_result.webp"
+import Sport1 from "../../public/images/action/IMG_8714_result_result.webp"
+import Sport2 from "../../public/images/action/IMG_8751_result_result.webp"
+import Sport3 from "../../public/images/action/IMG_8792_result_result.webp"
+import Sport4 from "../../public/images/action/IMG_8827_result_result.webp"
+import Sport5 from "../../public/images/action/IMG_8862_result_result.webp"
+import Sport6 from "../../public/images/action/IMG_8878-2_result_result.webp"
+import Sport7 from "../../public/images/action/IMG_8907_result_result.webp"
+import Sport8 from "../../public/images/action/IMG_8990_result_result.webp"
+import Sport9 from "../../public/images/action/IMG_9019_result_result.webp"
+import Sport10 from "../../public/images/action/IMG_9029_result_result.webp"
+import Sport11 from "../../public/images/action/IMG_9039_result_result.webp"
+import Sport12 from "../../public/images/action/IMG_9059_result_result.webp"
+import Sport13 from "../../public/images/action/IMG_9121_result_result.webp"
+import Sport14 from "../../public/images/action/IMG_9135_result_result.webp"
+import Sport15 from "../../public/images/action/IMG_9160_result_result.webp"
+import Sport16 from "../../public/images/action/IMG_9170_result_result.webp"
+import Sport18 from "../../public/images/action/IMG_9232_result_result.webp"
+import Sport19 from "../../public/images/action/IMG_9615_result_result.webp"
+import Sport20 from "../../public/images/action/IMG_9663_result_result.webp"
+import Sport21 from "../../public/images/action/IMG_9756_result_result.webp"
+import Sport22 from "../../public/images/action/action_image_2_result_result.webp"
+import Sport23 from "../../public/images/action/action_image_result_result.webp"
 
 import { StaticImageData } from "next/image";
 
@@ -40,7 +39,6 @@ const sportItems: SportItem[] = [
   { image: Sport1, title: "Sport Image 1" },
   { image: Sport15, title: "Sport Image 15" },
   { image: Sport22, title: "Sport Image 22" },
-  { image: Sport17, title: "Sport Image 17" },
   { image: Sport5, title: "Sport Image 5" },
   { image: Sport18, title: "Sport Image 18" },
   { image: Sport3, title: "Sport Image 3" },

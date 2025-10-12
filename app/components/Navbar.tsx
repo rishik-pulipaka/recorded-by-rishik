@@ -57,11 +57,11 @@ export default function Navbar() {
         <Link href="/">
           <div className="flex gap-3">
             <div className="">
-              <h1 className={`text-lg tracking-[10px] lg:text-3xl ${montserratFontSemiBold.className}`}>
-                RISHIK P
+              <h1 className={`text-lg tracking-[14px] lg:text-3xl ${montserratFontSemiBold.className}`}>
+                RECORDED
               </h1>
               <h1 className={`text-lg tracking-[14.5px] lg:text-3xl ${montserratFontBold.className}`}>
-                SHOOTS
+                BY RISHIK
               </h1>     
             </div>
             {/* Vertical line in logo */}
