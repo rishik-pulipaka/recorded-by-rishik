@@ -1,4 +1,4 @@
-# Recorded by Rishik — Pre-Build Audit
+npm# Recorded by Rishik — Pre-Build Audit
 
 > Generated: 2026-05-18. Auditor: Claude Code.
 > Purpose: Map every feature in Spec §3 to Done / Partial / Missing before any implementation begins.
