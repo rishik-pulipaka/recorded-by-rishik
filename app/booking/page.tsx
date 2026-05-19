@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, User, Mail, Phone, MessageSquare, DollarSign } from 'lucide-react';
 
-interface FormData {
+interface BookingFormData {
   sessionType: string;
   numberOfPeople: number;
   date: string;
@@ -49,7 +51,7 @@ const generateTimeSlots = () => {
 };
 
 const BookingPage = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BookingFormData>({
     sessionType: '',
     numberOfPeople: 1,
     date: '',
@@ -62,36 +64,35 @@ const BookingPage = () => {
   
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [estimatedPrice, setEstimatedPrice] = useState(0);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Partial<FormErrors>>({});
 
   const timeSlots = generateTimeSlots();
 
   // Calculate price whenever relevant fields change
   useEffect(() => {
     if (formData.sessionType) {
-      const pricing = PRICING[formData.sessionType];
-      if (pricing.type === 'group') {
+      const pricing = PRICING[formData.sessionType as keyof typeof PRICING];
+      if (pricing?.type === 'group') {
         setEstimatedPrice(pricing.base * formData.numberOfPeople);
-      } else {
+      } else if (pricing) {
         setEstimatedPrice(pricing.base);
       }
     }
   }, [formData.sessionType, formData.numberOfPeople]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
-    if (errors[name]) {
+    if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: Partial<FormErrors> = {};
     if (!formData.sessionType) newErrors.sessionType = 'Please select a session type';
     if (!formData.date) newErrors.date = 'Please select a date';
     if (!formData.time) newErrors.time = 'Please select a time';
@@ -100,7 +101,7 @@ const BookingPage = () => {
     if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Please enter a valid email';
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
     
-    const isGroup = PRICING[formData.sessionType]?.type === 'group';
+    const isGroup = PRICING[formData.sessionType as keyof typeof PRICING]?.type === 'group';
     if (isGroup && formData.numberOfPeople < 1) {
       newErrors.numberOfPeople = 'Please enter number of people';
     }
@@ -137,7 +138,7 @@ const BookingPage = () => {
     return today.toISOString().split('T')[0];
   };
 
-  const isGroupSession = formData.sessionType && PRICING[formData.sessionType]?.type === 'group';
+  const isGroupSession = formData.sessionType && PRICING[formData.sessionType as keyof typeof PRICING]?.type === 'group';
 
   if (showConfirmation) {
     return (
@@ -153,7 +154,7 @@ const BookingPage = () => {
               </div>
               <h1 className="text-3xl md:text-4xl font-serif text-[#3D3D3D] mb-2">Booking Submitted!</h1>
               {/* COLORS: Change text-[#3D3D3D] to your heading color */}
-              <p className="text-gray-600">Thank you for your booking request. We'll be in touch soon!</p>
+              <p className="text-gray-600">Thank you for your booking request. We&apos;ll be in touch soon!</p>
             </div>
 
             <div className="border-t border-gray-200 pt-8 space-y-4">
@@ -232,7 +233,7 @@ const BookingPage = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-serif text-[#3D3D3D] mb-4">Book Your Session</h1>
           {/* COLORS: Change text-[#3D3D3D] to your heading color */}
-          <p className="text-gray-600 text-lg">Let's capture something beautiful together</p>
+          <p className="text-gray-600 text-lg">Let&apos;s capture something beautiful together</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
@@ -428,7 +429,7 @@ const BookingPage = () => {
               name="notes"
               value={formData.notes}
               onChange={handleInputChange}
-              rows="4"
+              rows={4}
               placeholder="Any special requests or details we should know about..."
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3D3D3D] transition-all resize-none"
             />
@@ -458,7 +459,7 @@ const BookingPage = () => {
           </button>
 
           <p className="text-center text-gray-500 text-sm mt-4">
-            You'll receive a confirmation email within 24 hours
+            You&apos;ll receive a confirmation email within 24 hours
           </p>
         </div>
       </div>

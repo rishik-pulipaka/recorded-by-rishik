@@ -18,8 +18,7 @@ export default function HomePage() {
           src={coverImg}
           className="object-cover absolute inset-0 size-full"
         />
-        .w-full.min-h-1000px.
-        <div className="z-30 flex relative flex-col mb-0 ml-9 max-w-full w-[629px] max-md:mb-2.5">
+<div className="z-30 flex relative flex-col mb-0 ml-9 max-w-full w-[629px] max-md:mb-2.5">
           <div className="text-2xl tracking-[14.4px] max-md:max-w-full lg:text-4xl">
             where <b>memories</b> meet <b>masterpieces</b>
           </div>
