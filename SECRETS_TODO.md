@@ -126,6 +126,7 @@ UPDATE users SET role = 'admin' WHERE email = 'r.pulipaka18@gmail.com';
 - [ ] `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` = `/dashboard`
 - [ ] `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` = `/dashboard`
 - [ ] `NEXT_PUBLIC_API_URL`
+- [ ] `NEXT_PUBLIC_GA_MEASUREMENT_ID` (optional — from Google Analytics, format: G-XXXXXXXXXX)
 
 ### Backend (Render)
 - [ ] `DATABASE_URL`

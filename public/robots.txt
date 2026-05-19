@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /dashboard/
+
+Sitemap: https://recordedbyrishik.com/sitemap.xml
