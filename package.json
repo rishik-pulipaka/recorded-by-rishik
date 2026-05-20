@@ -17,7 +17,7 @@
     "lucide": "^0.479.0",
     "lucide-react": "^0.479.0",
     "motion": "^12.4.11",
-    "next": "^15.3.0-canary.16",
+    "next": "15.3.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.76.0",

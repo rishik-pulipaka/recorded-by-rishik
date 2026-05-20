@@ -47,14 +47,13 @@ export default function PortraitGallery() {
             {portraitItems.map((item, i) => (
               <a
                 key={i}
-                href={item.image.src}
-                data-src={item.image.src}
+                href={item.src}
+                data-src={item.src}
                 className="lightgallery-item block my-2"
               >
                 <Image
-                  src={item.image}
+                  src={item.src}
                   alt=""
-                  quality={100}
                   width={600}
                   height={400}
                   className="w-full h-auto rounded-lg shadow"

@@ -1,17 +1,9 @@
-// Import images here
-
-import { StaticImageData } from "next/image";
-
 type ArchitectureItem = {
-    image: StaticImageData;
-    title: string;
+  src: string;
+  title: string;
 };
 
-const architectureItems: ArchitectureItem[] = [
-  
-];
-
+const architectureItems: ArchitectureItem[] = [];
 
 export { architectureItems };
 export type { ArchitectureItem };
-
