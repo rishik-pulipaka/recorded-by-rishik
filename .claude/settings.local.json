@@ -4,7 +4,11 @@
       "Bash(npm install *)",
       "Bash(npm run *)",
       "Bash(git commit -m ' *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(node -e \"process.on\\('warning', w => console.log\\(w.message\\)\\); require\\('next'\\)\")",
+      "Bash(node --trace-deprecation -e \"require\\('next/dist/compiled/next-server/pages.runtime.dev.js'\\)\")",
+      "Bash(npm ls *)",
+      "Bash(npm audit *)"
     ]
   }
 }
