@@ -4,7 +4,8 @@ from sqlmodel import Session, select
 from app.db import get_session
 from app.auth import get_current_user
 from app.models.user import User
-from app.models.booking import Booking, BookingEvent, Message
+from app.models.booking import Booking, BookingEvent
+from app.models.message import Message
 from app.models.deliverable import Deliverable
 from app.schemas.user import UserRead, UserUpdate
 from app.schemas.booking import (
