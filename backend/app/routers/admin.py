@@ -5,7 +5,8 @@ from sqlmodel import Session, select, func
 from app.db import get_session
 from app.auth import get_admin_user
 from app.models.user import User
-from app.models.booking import Booking, BookingEvent, BookingStatus, Message
+from app.models.booking import Booking, BookingEvent, BookingStatus
+from app.models.message import Message
 from app.models.deliverable import Deliverable
 from app.models.pricing import PricingRule
 from app.models.quote import Quote
