@@ -152,8 +152,8 @@ export default function ContactPage() {
         <div className="mt-12 pt-8 border-t border-white/10 grid sm:grid-cols-2 gap-4 text-sm text-white/50">
           <div>
             <p className="text-white/30 text-xs tracking-[3px] mb-1">EMAIL</p>
-            <a href="mailto:r.pulipaka18@gmail.com" className="hover:text-white transition-colors">
-              r.pulipaka18@gmail.com
+            <a href="mailto:recordedbyrishik@gmail.com" className="hover:text-white transition-colors">
+              recordedbyrishik@gmail.com
             </a>
           </div>
           <div>

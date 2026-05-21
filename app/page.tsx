@@ -6,12 +6,11 @@ import coverImg from "../public/images/covers/DSC_0800.jpg";
 import portraitsImg from "../public/images/covers/DSC_0454_result.webp";
 import sportImg from "../public/images/covers/IMG_8878-2_result.webp";
 import carImg from "../public/images/covers/ferrari_badge.png";
-import pfp from "../public/blank_profile_picture.webp";
 
 export const metadata: Metadata = {
   title: "Recorded by Rishik | Photography",
   description:
-    "Professional photography in Los Angeles — portraits, headshots, events, and more. Book your session online and get an instant quote.",
+    "Professional photography in Los Angeles — portraits, headshots, modeling, and more. Book your session online and get an instant quote.",
   openGraph: {
     title: "Recorded by Rishik | Photography",
     description: "Professional photography in Los Angeles.",
@@ -25,37 +24,19 @@ const bold = Montserrat({ subsets: ["latin"], weight: "800" });
 
 const SERVICES = [
   {
-    name: "Portraits",
-    description: "Individual or group sessions that capture personality, confidence, and authentic connection.",
-    from: 65,
-  },
-  {
-    name: "Events",
-    description: "Corporate events, celebrations, and social gatherings — every moment preserved.",
-    from: 100,
-  },
-  {
     name: "Headshots",
     description: "Professional headshots for LinkedIn, acting portfolios, and company directories.",
     from: 65,
   },
-];
-
-const TESTIMONIALS = [
   {
-    quote: "Rishik has a gift for making people feel at ease. Our portraits came out better than we ever imagined.",
-    author: "Sarah M.",
-    role: "Portrait client",
+    name: "Modeling",
+    description: "Individual and group modeling sessions that tell your story through light and composition.",
+    from: 85,
   },
   {
-    quote: "Absolutely incredible work. The photos from our event were delivered fast and looked stunning.",
-    author: "Daniel K.",
-    role: "Event client",
-  },
-  {
-    quote: "My LinkedIn headshots tripled my profile views. Worth every penny.",
-    author: "Priya R.",
-    role: "Headshot client",
+    name: "Group Sessions",
+    description: "Team headshots and group modeling — competitive per-person pricing for any size group.",
+    from: 40,
   },
 ];
 
@@ -88,7 +69,7 @@ export default function HomePage() {
           </h1>
           <p className={`text-base sm:text-lg text-white/80 max-w-md ${mono.className}`}>
             Professional photography for the moments that matter — portraits,
-            events, headshots, and more.
+            headshots, modeling, and more.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-2">
             <Link
@@ -219,69 +200,6 @@ export default function HomePage() {
             >
               See Full Pricing
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── About teaser ──────────────────────────────────────────────── */}
-      <section className="py-20 px-4">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div className="relative aspect-[4/5] rounded-xl overflow-hidden">
-            <Image
-              src={pfp}
-              alt="Rishik Pulipaka"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-          </div>
-          <div className="flex flex-col gap-6">
-            <div>
-              <p className={`text-xs tracking-[5px] text-white/40 mb-2 ${mono.className}`}>ABOUT</p>
-              <h2 className={`text-3xl sm:text-4xl ${bold.className}`}>
-                Hey, I&apos;m Rishik.
-              </h2>
-            </div>
-            <p className="text-white/70 leading-relaxed">
-              I&apos;m a Los Angeles-based photographer with a passion for capturing
-              authentic moments. What started as a personal journey has grown into a
-              creative profession — telling stories through light, timing, and composition.
-            </p>
-            <p className="text-white/70 leading-relaxed">
-              Whether it&apos;s a corporate headshot, a candid event, or a portrait session
-              that reveals your true self, my goal is always the same: images that last.
-            </p>
-            <Link
-              href="/about"
-              className={`self-start text-sm tracking-[2px] border-b border-white/30 hover:border-white pb-0.5 transition-colors ${mono.className}`}
-            >
-              More about me →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Testimonials ──────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-stone-950/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <p className={`text-xs tracking-[5px] text-white/40 mb-2 ${mono.className}`}>TESTIMONIALS</p>
-            <h2 className={`text-3xl sm:text-4xl ${bold.className}`}>What Clients Say</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map(({ quote, author, role }) => (
-              <div key={author} className="border border-white/10 rounded-xl p-8 flex flex-col gap-6">
-                <svg className="w-6 h-6 text-white/20" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                </svg>
-                <p className="text-white/70 leading-relaxed flex-grow italic">{quote}</p>
-                <div>
-                  <p className={`text-sm ${semibold.className}`}>{author}</p>
-                  <p className="text-xs text-white/40 tracking-[1px]">{role}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>

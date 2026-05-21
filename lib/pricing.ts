@@ -3,78 +3,150 @@
 
 export const SHOOT_TYPES = [
   {
-    id: "portraits",
-    name: "Portraits",
-    description: "Individual & group portrait sessions",
-    emoji: "🎭",
-  },
-  {
-    id: "events",
-    name: "Events",
-    description: "Birthdays, corporate, social events",
-    emoji: "🎉",
-  },
-  {
     id: "headshots",
     name: "Headshots",
-    description: "Professional headshots for LinkedIn & resumes",
+    description: "Professional headshots for LinkedIn, acting portfolios & directories",
     emoji: "💼",
   },
   {
-    id: "products",
-    name: "Products",
-    description: "Product & commercial photography",
-    emoji: "📦",
+    id: "group_headshots",
+    name: "Group Headshots",
+    description: "Team & organization headshot sessions — priced per person",
+    emoji: "👥",
   },
   {
-    id: "real_estate",
-    name: "Real Estate",
-    description: "Interior & exterior property photography",
-    emoji: "🏠",
+    id: "modeling",
+    name: "Modeling",
+    description: "Individual modeling & portfolio sessions",
+    emoji: "✨",
+  },
+  {
+    id: "group_modeling",
+    name: "Group Modeling",
+    description: "Group modeling sessions — priced per person",
+    emoji: "🌟",
   },
 ] as const;
 
 export const PACKAGES = [
+  // ── Headshots ────────────────────────────────────────────────────────────
   {
-    id: "30min",
-    name: "30 Minutes",
+    id: "headshot-basic",
+    shootType: "headshots",
+    name: "Basic",
     price: 65,
-    photos: "3–5",
-    description: "Quick session, perfect for headshots",
+    photos: "3",
+    description: "Quick professional update",
     durationHours: 0.5,
   },
   {
-    id: "1hr",
-    name: "1 Hour",
+    id: "headshot-standard",
+    shootType: "headshots",
+    name: "Standard",
     price: 100,
-    photos: "8–12",
-    description: "Standard session for most needs",
-    durationHours: 1,
-  },
-  {
-    id: "2hr",
-    name: "2 Hours",
-    price: 175,
-    photos: "15–20",
-    description: "Extended session with multiple looks",
-    durationHours: 2,
+    photos: "5",
+    description: "Covers all the bases — the most popular choice",
+    durationHours: 0.75,
     popular: true,
   },
   {
-    id: "half-day",
-    name: "Half Day",
-    price: 300,
-    photos: "30–40",
-    description: "4 hours of deep coverage",
-    durationHours: 4,
+    id: "headshot-pro",
+    shootType: "headshots",
+    name: "Pro",
+    price: 175,
+    photos: "10",
+    description: "Full coverage with multiple looks",
+    durationHours: 1,
+  },
+  // ── Group Headshots ───────────────────────────────────────────────────────
+  {
+    id: "group-headshot-sm",
+    shootType: "group_headshots",
+    name: "Small Group (2–4)",
+    price: 55,
+    photos: "3 per person",
+    pricePerPerson: true,
+    description: "$55 per person — 3 photos each",
+    durationHours: 1,
   },
   {
-    id: "full-day",
-    name: "Full Day",
-    price: 500,
-    photos: "60+",
-    description: "8 hours — the complete experience",
-    durationHours: 8,
+    id: "group-headshot-md",
+    shootType: "group_headshots",
+    name: "Medium Group (5–9)",
+    price: 45,
+    photos: "3 per person",
+    pricePerPerson: true,
+    description: "$45 per person — 3 photos each",
+    durationHours: 1.5,
+  },
+  {
+    id: "group-headshot-lg",
+    shootType: "group_headshots",
+    name: "Large Group (10+)",
+    price: 40,
+    photos: "3 per person",
+    pricePerPerson: true,
+    description: "$40 per person — 3 photos each",
+    durationHours: 2,
+  },
+  // ── Modeling ─────────────────────────────────────────────────────────────
+  {
+    id: "modeling-basic",
+    shootType: "modeling",
+    name: "Basic",
+    price: 85,
+    photos: "6",
+    description: "Essential portfolio starter",
+    durationHours: 1,
+  },
+  {
+    id: "modeling-standard",
+    shootType: "modeling",
+    name: "Standard",
+    price: 130,
+    photos: "10–12",
+    description: "Strong portfolio coverage",
+    durationHours: 1.5,
+  },
+  {
+    id: "modeling-pro",
+    shootType: "modeling",
+    name: "Pro",
+    price: 200,
+    photos: "15–18",
+    description: "Full portfolio build with multiple looks",
+    durationHours: 2,
+  },
+  // ── Group Modeling ────────────────────────────────────────────────────────
+  {
+    id: "group-modeling-sm",
+    shootType: "group_modeling",
+    name: "Small Group (2–4)",
+    price: 70,
+    photos: "6 per person",
+    pricePerPerson: true,
+    description: "$70 per person — 6 photos each",
+    durationHours: 1.5,
+  },
+  {
+    id: "group-modeling-md",
+    shootType: "group_modeling",
+    name: "Medium Group (5–9)",
+    price: 60,
+    photos: "6 per person",
+    pricePerPerson: true,
+    description: "$60 per person — 6 photos each",
+    durationHours: 2,
+  },
+  {
+    id: "group-modeling-lg",
+    shootType: "group_modeling",
+    name: "Large Group (10+)",
+    price: 55,
+    photos: "6 per person",
+    pricePerPerson: true,
+    description: "$55 per person — 6 photos each",
+    durationHours: 2.5,
   },
 ] as const;
 
@@ -97,15 +169,7 @@ export const ADDONS = [
     detail: "Shoot at two different spots",
     price: 40,
   },
-  {
-    id: "prints",
-    name: "Print Package",
-    detail: "Set of 4×6 prints (20 photos)",
-    price: 75,
-  },
 ] as const;
-
-export const WEEKEND_SURCHARGE_PCT = 15;
 
 export interface QuoteLineItem {
   label: string;
@@ -117,17 +181,19 @@ export interface QuoteResult {
   modifiers: QuoteLineItem[];
   subtotal: number;
   total: number;
+  isPerPerson: boolean;
 }
 
 export function computeQuote(
   packageId: string,
-  addonIds: string[],
-  dateStr: string
+  addonIds: string[]
 ): QuoteResult | null {
   const pkg = PACKAGES.find((p) => p.id === packageId);
   if (!pkg) return null;
 
-  const lineItems: QuoteLineItem[] = [{ label: pkg.name, amount: pkg.price }];
+  const isPerPerson = "pricePerPerson" in pkg && pkg.pricePerPerson === true;
+  const label = pkg.name + (isPerPerson ? " (per person)" : "");
+  const lineItems: QuoteLineItem[] = [{ label, amount: pkg.price }];
 
   for (const id of addonIds) {
     const addon = ADDONS.find((a) => a.id === id);
@@ -136,17 +202,7 @@ export function computeQuote(
 
   const subtotal = lineItems.reduce((s, i) => s + i.amount, 0);
   const modifiers: QuoteLineItem[] = [];
+  const total = subtotal;
 
-  if (dateStr) {
-    const d = new Date(dateStr + "T12:00:00");
-    if (d.getDay() === 0 || d.getDay() === 6) {
-      modifiers.push({
-        label: `Weekend surcharge (${WEEKEND_SURCHARGE_PCT}%)`,
-        amount: Math.round(subtotal * (WEEKEND_SURCHARGE_PCT / 100)),
-      });
-    }
-  }
-
-  const total = subtotal + modifiers.reduce((s, m) => s + m.amount, 0);
-  return { lineItems, modifiers, subtotal, total };
+  return { lineItems, modifiers, subtotal, total, isPerPerson };
 }

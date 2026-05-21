@@ -117,7 +117,7 @@ export default function BookPage() {
   const next = useCallback(() => update({ step: Math.min(draft.step + 1, 7) }), [draft.step, update]);
   const back = useCallback(() => update({ step: Math.max(draft.step - 1, 1) }), [draft.step, update]);
 
-  const quote = computeQuote(draft.packageId, draft.addonIds, draft.date);
+  const quote = computeQuote(draft.packageId, draft.addonIds);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -234,7 +234,7 @@ export default function BookPage() {
             <Step1 value={draft.shootType} onChange={(v) => { update({ shootType: v }); next(); }} />
           )}
           {draft.step === 2 && (
-            <Step2 value={draft.packageId} onChange={(v) => { update({ packageId: v }); next(); }} onBack={back} />
+            <Step2 value={draft.packageId} shootType={draft.shootType} onChange={(v) => { update({ packageId: v }); next(); }} onBack={back} />
           )}
           {draft.step === 3 && (
             <Step3 value={draft.addonIds} onChange={(v) => update({ addonIds: v })} onNext={next} onBack={back} />
@@ -315,16 +315,23 @@ function Step1({ value, onChange }: { value: string; onChange: (v: string) => vo
 // ── Step 2: Package ────────────────────────────────────────────────────────
 function Step2({
   value,
+  shootType,
   onChange,
   onBack,
 }: {
   value: string;
+  shootType: string;
   onChange: (v: string) => void;
   onBack: () => void;
 }) {
+  const packages = PACKAGES.filter((p) => p.shootType === shootType);
+  const isGroupType = shootType === "group_headshots" || shootType === "group_modeling";
   return (
     <div className="flex flex-col gap-4">
-      {PACKAGES.map((pkg) => (
+      {isGroupType && (
+        <p className="text-sm text-white/50 -mt-4 mb-2">Priced per person — final total depends on group size.</p>
+      )}
+      {packages.map((pkg) => (
         <button
           key={pkg.id}
           onClick={() => onChange(pkg.id)}
@@ -431,11 +438,6 @@ function Step4({
           onChange={(e) => onChange({ date: e.target.value, timeSlot: "" })}
           className="px-4 py-3 rounded-lg bg-white/5 border border-white/15 text-white focus:outline-none focus:border-white/40 w-full sm:w-auto [color-scheme:dark]"
         />
-        {weekend && date && (
-          <p className="text-amber-400 text-xs mt-2">
-            Weekend booking — a 15% surcharge applies.
-          </p>
-        )}
       </div>
 
       {/* Time slots */}
@@ -657,6 +659,7 @@ function StepReview({
           </div>
           <p className="text-xs text-white/30 mt-2">
             * Final price confirmed by Rishik. Deposit details sent on confirmation.
+            {quote.isPerPerson && " Group session total depends on number of attendees."}
           </p>
         </div>
       )}
@@ -778,7 +781,10 @@ function QuotePanel({ draft, quote }: { draft: BookingDraft; quote: ReturnType<t
             <span>Estimated Total</span>
             <span>${quote?.total ?? 0}</span>
           </div>
-          <p className="text-xs text-white/30 mt-2">Confirmed by Rishik after submission</p>
+          <p className="text-xs text-white/30 mt-2">
+            Confirmed by Rishik after submission.
+            {quote?.isPerPerson && " Group total depends on attendees."}
+          </p>
         </>
       )}
     </div>
