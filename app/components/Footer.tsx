@@ -25,7 +25,7 @@ export default function Footer() {
             </Link>
           </div>        
         <div id="copyright-container" className="self-center mt-12 text-sm text-center text-secondary tracking-[2.85px] max-md:mt-10">
-            © 2025 Rishik P Shoots. All Rights Reserved.
+            © 2026 Recorded by Rishik. All Rights Reserved.
         </div>
         
     </div>
