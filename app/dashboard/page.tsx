@@ -31,7 +31,7 @@ async function getMyBookings(): Promise<ClientBooking[] | null> {
   try {
     const { getToken } = await auth();
     const token = await getToken();
-    const API = process.env.NEXT_PUBLIC_API_URL ?? "";
+    const API = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
     const res = await fetch(`${API}/api/v1/me/bookings`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",

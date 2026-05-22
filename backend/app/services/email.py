@@ -133,12 +133,57 @@ class EmailService:
             to=ADMIN_EMAIL,
             subject=f"New inquiry: {payload.subject} — {payload.name}",
             html=f"""
-            <h2>New Contact Form Submission</h2>
-            <p><strong>Name:</strong> {payload.name}</p>
-            <p><strong>Email:</strong> {payload.email}</p>
-            <p><strong>Phone:</strong> {payload.phone or 'N/A'}</p>
-            <p><strong>Subject:</strong> {payload.subject}</p>
-            <hr>
-            <p>{payload.message}</p>
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#141414;border:1px solid #2a2a2a;border-radius:12px;overflow:hidden;">
+        <!-- Header -->
+        <tr>
+          <td style="padding:32px 40px 24px;border-bottom:1px solid #2a2a2a;">
+            <p style="margin:0 0 4px;font-size:10px;letter-spacing:5px;color:#666;text-transform:uppercase;">Recorded by Rishik</p>
+            <h1 style="margin:0;font-size:22px;font-weight:700;color:#fff;">New Inquiry</h1>
+          </td>
+        </tr>
+        <!-- Sender info -->
+        <tr>
+          <td style="padding:28px 40px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding-bottom:16px;border-bottom:1px solid #222;">
+                  <p style="margin:0 0 2px;font-size:10px;letter-spacing:3px;color:#555;text-transform:uppercase;">From</p>
+                  <p style="margin:0;font-size:16px;color:#fff;font-weight:600;">{payload.name}</p>
+                  <p style="margin:4px 0 0;font-size:13px;color:#888;">{payload.email}{f" &nbsp;·&nbsp; {payload.phone}" if payload.phone else ""}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px 0;border-bottom:1px solid #222;">
+                  <p style="margin:0 0 2px;font-size:10px;letter-spacing:3px;color:#555;text-transform:uppercase;">Subject</p>
+                  <p style="margin:0;font-size:15px;color:#fff;">{payload.subject}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 28px;">
+                  <p style="margin:0 0 10px;font-size:10px;letter-spacing:3px;color:#555;text-transform:uppercase;">Message</p>
+                  <p style="margin:0;font-size:14px;color:#ccc;line-height:1.7;white-space:pre-wrap;">{payload.message}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- Reply CTA -->
+        <tr>
+          <td style="padding:0 40px 32px;">
+            <a href="mailto:{payload.email}" style="display:inline-block;padding:12px 24px;background:#fff;color:#000;font-size:12px;font-weight:700;letter-spacing:2px;text-decoration:none;border-radius:8px;text-transform:uppercase;">
+              Reply to {payload.name.split()[0]}
+            </a>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
             """,
         )

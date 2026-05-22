@@ -46,16 +46,27 @@ async def get_current_user(
     user = session.exec(select(User).where(User.clerk_id == clerk_id)).first()
 
     if not user:
-        # First login — create user row from JWT claims
         email = payload.get("email") or ""
         first = payload.get("first_name") or ""
         last = payload.get("last_name") or ""
         name = f"{first} {last}".strip() or email
-        user = User(
-            clerk_id=clerk_id,
-            email=email,
-            name=name,
-        )
+
+        # Check for a pending user created during an unauthenticated booking
+        pending = session.exec(
+            select(User).where(User.email == email, User.clerk_id.like("pending_%"))
+        ).first()
+
+        if pending:
+            # Link the real Clerk ID to the existing record so bookings stay attached
+            pending.clerk_id = clerk_id
+            if not pending.name or pending.name == pending.email:
+                pending.name = name
+            session.add(pending)
+            session.commit()
+            session.refresh(pending)
+            return pending
+
+        user = User(clerk_id=clerk_id, email=email, name=name)
         session.add(user)
         session.commit()
         session.refresh(user)

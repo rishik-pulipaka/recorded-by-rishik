@@ -12,6 +12,7 @@ async function apiFetch<T>(
     const body = await res.text().catch(() => "");
     throw new Error(`API ${res.status}: ${body}`);
   }
+  if (res.status === 204) return null as T;
   return res.json() as Promise<T>;
 }
 
