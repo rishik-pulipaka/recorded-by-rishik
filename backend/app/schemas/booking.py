@@ -7,10 +7,10 @@ from app.models.booking import BookingStatus
 
 class BookingCreate(BaseModel):
     """Submitted by a client from the booking form."""
-    quote_id: uuid.UUID
+    quote_id: str | None = None
     shoot_type: str
-    package_id: uuid.UUID
-    addon_ids: list[uuid.UUID] = []
+    package_id: str
+    addon_ids: list[str] = []
     start_time: datetime
     end_time: datetime
     location: str
@@ -25,7 +25,7 @@ class BookingRead(BaseModel):
     id: uuid.UUID
     client_id: uuid.UUID
     shoot_type: str
-    package_id: uuid.UUID
+    package_id: str
     start_time: datetime
     end_time: datetime
     location: str

@@ -13,8 +13,9 @@ def _client() -> None:
     resend.api_key = settings.RESEND_API_KEY
 
 
-ADMIN_EMAIL = "r.pulipaka18@gmail.com"
-FROM_EMAIL = "Recorded by Rishik <no-reply@recordedbyrishik.com>"
+ADMIN_EMAIL = "recordedbyrishik@gmail.com"
+# Use onboarding@resend.dev until recordedbyrishik.com is verified in Resend
+FROM_EMAIL = "Recorded by Rishik <onboarding@resend.dev>"
 
 
 class EmailService:

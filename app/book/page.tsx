@@ -486,7 +486,6 @@ function Step5({
 }) {
   const options: { id: BookingDraft["locationType"]; label: string; detail: string }[] = [
     { id: "client_choice", label: "Client's choice", detail: "You pick the spot, I bring the gear" },
-    { id: "studio", label: "Studio / Indoor", detail: "Discuss a studio setup during confirmation" },
     { id: "custom", label: "Specific address", detail: "Enter a location and I'll confirm travel" },
   ];
   const canNext = locationType !== "custom" || address.trim().length > 3;

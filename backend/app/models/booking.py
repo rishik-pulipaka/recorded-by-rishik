@@ -27,7 +27,7 @@ class Booking(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     client_id: uuid.UUID = Field(foreign_key="users.id", index=True)
     shoot_type: str
-    package_id: uuid.UUID = Field(foreign_key="pricing_rules.id", index=True)
+    package_id: str = Field(index=True)
     start_time: datetime
     end_time: datetime
     location: str

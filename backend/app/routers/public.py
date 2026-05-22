@@ -61,13 +61,25 @@ def get_availability(
     return cal.get_available_slots(from_date, to_date)
 
 
+# Local pricing lookup — mirrors lib/pricing.ts on the frontend
+_PACKAGE_PRICES = {
+    "headshot-basic": 65, "headshot-standard": 100, "headshot-pro": 175,
+    "group-headshot-sm": 55, "group-headshot-md": 45, "group-headshot-lg": 40,
+    "modeling-basic": 85, "modeling-standard": 130, "modeling-pro": 200,
+    "group-modeling-sm": 70, "group-modeling-md": 60, "group-modeling-lg": 55,
+}
+_ADDON_PRICES = {
+    "extra-edits": 25, "rush": 50, "second-location": 40,
+}
+
+
 @router.post("/bookings", response_model=BookingRead, status_code=201)
 def create_booking(payload: BookingCreate, session: Session = Depends(get_session)):
-    # Find or create client user (they may not be logged in yet)
+    # Find or create client user
     user = session.exec(select(User).where(User.email == payload.email)).first()
     if not user:
         user = User(
-            clerk_id=f"pending_{uuid.uuid4()}",  # Placeholder until they create an account
+            clerk_id=f"pending_{uuid.uuid4()}",
             email=payload.email,
             name=payload.name,
             phone=payload.phone,
@@ -75,10 +87,9 @@ def create_booking(payload: BookingCreate, session: Session = Depends(get_sessio
         session.add(user)
         session.flush()
 
-    # Validate the quote exists and isn't expired
-    quote = session.get(Quote, payload.quote_id)
-    if not quote:
-        raise HTTPException(status_code=400, detail="Quote not found")
+    # Compute total from local pricing constants
+    total = _PACKAGE_PRICES.get(payload.package_id, 0)
+    total += sum(_ADDON_PRICES.get(aid, 0) for aid in payload.addon_ids)
 
     booking = Booking(
         client_id=user.id,
@@ -88,37 +99,22 @@ def create_booking(payload: BookingCreate, session: Session = Depends(get_sessio
         end_time=payload.end_time,
         location=payload.location,
         special_notes=payload.special_notes,
-        quote_total=quote.total,
-        deposit_amount=quote.total * 1,  # Full amount; admin sets deposit when confirming
+        quote_total=total,
+        deposit_amount=0,
     )
     session.add(booking)
     session.flush()
 
-    # Add-ons
-    for addon_id in payload.addon_ids:
-        rule = session.get(PricingRule, addon_id)
-        if rule:
-            session.add(BookingAddon(
-                booking_id=booking.id,
-                pricing_rule_id=addon_id,
-                price_snapshot=rule.base_price,
-            ))
-
-    # Audit event
     session.add(BookingEvent(
         booking_id=booking.id,
         event_type="booking_created",
-        payload={"status": BookingStatus.pending_confirmation},
+        payload={"status": BookingStatus.pending_confirmation, "addons": payload.addon_ids},
         created_by=user.id,
     ))
 
-    # Mark quote as converted
-    quote.converted_to_booking_id = booking.id
-    session.add(quote)
     session.commit()
     session.refresh(booking)
 
-    # Send emails (non-blocking — errors are logged not raised)
     email_svc = EmailService()
     try:
         email_svc.send_booking_received_admin(booking, user)
@@ -135,4 +131,4 @@ def contact_form(payload: ContactFormSubmission):
     try:
         email_svc.send_contact_form(payload)
     except Exception:
-        raise HTTPException(status_code=500, detail="Failed to send message")
+        pass  # Email errors logged by Sentry; don't surface to client

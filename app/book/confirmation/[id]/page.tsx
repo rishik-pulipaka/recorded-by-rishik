@@ -33,7 +33,6 @@ const NEXT_STEPS = [
 
 export default async function ConfirmationPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const isDemo = id === "demo";
 
   return (
     <div className={`min-h-screen text-secondary ${mono.className}`}>
@@ -54,20 +53,13 @@ export default async function ConfirmationPage({ params }: { params: Promise<{ i
             Your booking request has been submitted. I&apos;m excited to work with you —
             look out for a confirmation email within 24 hours.
           </p>
-          {isDemo && (
-            <p className="text-amber-400/70 text-xs mt-3">
-              (Demo mode — backend not connected yet. Your email would be sent once deployed.)
-            </p>
-          )}
         </div>
 
         {/* Reference */}
-        {!isDemo && (
-          <div className="border border-white/10 rounded-xl px-8 py-4 text-center">
-            <p className="text-xs text-white/30 tracking-[3px] mb-1">BOOKING REFERENCE</p>
-            <p className="text-sm font-mono text-white/70">{id}</p>
-          </div>
-        )}
+        <div className="border border-white/10 rounded-xl px-8 py-4 text-center">
+          <p className="text-xs text-white/30 tracking-[3px] mb-1">BOOKING REFERENCE</p>
+          <p className="text-sm font-mono text-white/70">{id}</p>
+        </div>
 
         {/* What happens next */}
         <div className="w-full text-left mt-4">

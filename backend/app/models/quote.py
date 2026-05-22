@@ -19,7 +19,7 @@ class Quote(SQLModel, table=True):
     session_id: str = Field(index=True)
     user_id: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id", index=True)
     shoot_type: str
-    package_id: Optional[uuid.UUID] = Field(default=None, foreign_key="pricing_rules.id")
+    package_id: Optional[str] = Field(default=None)
     # Full add-on selection stored as JSON snapshot
     addons: Optional[Any] = Field(default=None, sa_column=Column(JSONB, nullable=True))
     total: Decimal = Field(default=Decimal("0.00"), decimal_places=2, max_digits=10)
