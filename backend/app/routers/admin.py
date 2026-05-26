@@ -409,8 +409,7 @@ def calendar_connect(
     return {"auth_url": url}
 
 
-@router.get("/settings/google-calendar/callback")
-def calendar_callback(code: str, session: Session = Depends(get_session)):
-    cal = CalendarService(session)
-    cal.exchange_code(code)
-    return {"status": "connected"}
+# Callback is registered on the public router (see app/routers/public.py)
+# because Google's redirect is a top-level browser navigation with no auth
+# token. Security comes from the single-use OAuth code + registered redirect
+# URI on the Google side, not from a Bearer token.

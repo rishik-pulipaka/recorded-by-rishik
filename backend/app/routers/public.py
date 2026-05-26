@@ -2,7 +2,9 @@ from datetime import date
 from typing import Annotated
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import RedirectResponse
 from sqlmodel import Session, select
+from app.config import settings as app_settings
 from app.db import get_session
 from app.models.pricing import PricingRule
 from app.models.quote import Quote
@@ -59,6 +61,43 @@ def get_availability(
 ):
     cal = CalendarService(session)
     return cal.get_available_slots(from_date, to_date)
+
+
+def _frontend_origin() -> str:
+    """Pick a frontend URL to redirect to after OAuth callback.
+
+    Prefers the first non-localhost entry in ALLOWED_ORIGINS so we don't add
+    yet another env var. Falls back to localhost for dev.
+    """
+    for o in app_settings.ALLOWED_ORIGINS or []:
+        if not o.startswith("http://localhost"):
+            return o.rstrip("/")
+    origins = app_settings.ALLOWED_ORIGINS or []
+    return (origins[0] if origins else "http://localhost:3000").rstrip("/")
+
+
+@router.get("/admin/settings/google-calendar/callback", include_in_schema=False)
+def google_calendar_callback(code: str, session: Session = Depends(get_session)):
+    """OAuth redirect target. Google sends the user's browser here with a one-shot
+    `code` after they grant calendar permission. We exchange it for a refresh
+    token (stored in the settings table) and bounce the browser back to the
+    admin settings page on the frontend.
+
+    No auth dependency: Google's redirect is a top-level browser navigation
+    that cannot carry a Bearer token. The flow is protected by Google verifying
+    the redirect_uri against the registered list and the code being single-use.
+    """
+    try:
+        CalendarService(session).exchange_code(code)
+        return RedirectResponse(
+            url=f"{_frontend_origin()}/admin/settings?calendar=connected",
+            status_code=302,
+        )
+    except Exception:
+        return RedirectResponse(
+            url=f"{_frontend_origin()}/admin/settings?calendar=error",
+            status_code=302,
+        )
 
 
 # Local pricing lookup — mirrors lib/pricing.ts on the frontend
