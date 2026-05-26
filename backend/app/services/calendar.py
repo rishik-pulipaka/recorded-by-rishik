@@ -66,7 +66,7 @@ class CalendarService:
                 }
             },
             scopes=SCOPES,
-            redirect_uri=f"{settings.API_BASE_URL}{_REDIRECT_URI_PATH}",
+            redirect_uri=f"{settings.API_BASE_URL.rstrip('/')}{_REDIRECT_URI_PATH}",
         )
 
     def _get_service(self):
