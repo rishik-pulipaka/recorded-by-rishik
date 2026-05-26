@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
-import coverImg from "../public/images/covers/DSC_0800.jpg";
-import portraitsImg from "../public/images/covers/DSC_0454_result.webp";
-import sportImg from "../public/images/covers/IMG_8878-2_result.webp";
-import carImg from "../public/images/covers/ferrari_badge.png";
+import { getCover, getHero } from "@/lib/cloudinary";
+
+// hero rotates per visit, so render this page fresh on each request
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Recorded by Rishik | Photography",
@@ -40,21 +40,29 @@ const SERVICES = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [heroSrc, portraitsSrc, sportSrc, carSrc] = await Promise.all([
+    getHero(),
+    getCover("portraits"),
+    getCover("sport"),
+    getCover("cars"),
+  ]);
+
   return (
     <div className={`text-secondary ${mono.className}`}>
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section className="relative flex flex-col items-center justify-center min-h-[100svh] text-center overflow-hidden">
-        <Image
-          src={coverImg}
-          alt=""
-          fill
-          priority
-          quality={90}
-          className="object-cover object-center"
-          placeholder="blur"
-        />
+      <section className="relative flex flex-col items-center justify-center min-h-[100svh] text-center overflow-hidden bg-black">
+        {heroSrc && (
+          <Image
+            src={heroSrc}
+            alt=""
+            fill
+            priority
+            unoptimized
+            className="object-cover object-center"
+          />
+        )}
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 flex flex-col items-center gap-6 px-4 max-w-3xl">
           <p
@@ -130,22 +138,25 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {[
-              { src: portraitsImg, label: "Portraits", href: "/gallery/portraits" },
-              { src: sportImg, label: "Sports", href: "/gallery/sport" },
-              { src: carImg, label: "Cars", href: "/gallery/cars" },
+              { src: portraitsSrc, label: "Portraits", href: "/gallery/portraits" },
+              { src: sportSrc, label: "Sports", href: "/gallery/sport" },
+              { src: carSrc, label: "Cars", href: "/gallery/cars" },
             ].map(({ src, label, href }) => (
               <Link
                 key={label}
                 href={href}
-                className="group relative aspect-[3/4] overflow-hidden rounded-lg"
+                className="group relative aspect-[3/4] overflow-hidden rounded-lg bg-white/5"
               >
-                <Image
-                  src={src}
-                  alt={label}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                />
+                {src && (
+                  <Image
+                    src={src}
+                    alt={label}
+                    fill
+                    unoptimized
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                  />
+                )}
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-300" />
                 <div className="absolute bottom-4 left-4">
                   <span className={`text-sm tracking-[4px] ${semibold.className}`}>{label.toUpperCase()}</span>

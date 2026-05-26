@@ -47,6 +47,9 @@ backend/venv/
 # vercel
 .vercel
 
+# gallery images live in Cloudinary, not in the repo
+/public/images/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

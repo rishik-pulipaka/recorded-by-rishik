@@ -6,12 +6,15 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate:images": "node --env-file=.env.local scripts/upload-to-cloudinary.mjs",
+    "add-photos": "node --env-file=.env.local scripts/add-photos.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.7",
     "@hookform/resolvers": "^5.2.2",
     "@vercel/analytics": "^1.5.0",
+    "cloudinary": "^2.10.0",
     "date-fns": "^4.2.1",
     "lightgallery": "^2.8.3",
     "lucide": "^0.479.0",
@@ -22,6 +25,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.76.0",
     "react-masonry-css": "^1.0.16",
+    "sharp": "^0.34.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {

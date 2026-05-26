@@ -1,70 +1,15 @@
-"use client";
-
-import { useEffect } from "react";
 import Title from "@/app/components/Title";
-import Image from "next/image";
-import { sportItems } from "@/app/data/sport";
+import GalleryGrid from "@/app/components/GalleryGrid";
+import { getGalleryImages } from "@/lib/cloudinary";
 
-import Masonry from "react-masonry-css";
+export const revalidate = 3600;
 
-import LightGallery from "lightgallery/react";
-import "lightgallery/css/lightgallery.css";
-import "lightgallery/css/lg-zoom.css";
-import "lightgallery/css/lg-thumbnail.css";
-import lgThumbnail from "lightgallery/plugins/thumbnail";
-import lgZoom from "lightgallery/plugins/zoom";
-
-export default function ActionGallery() {
-  useEffect(() => {
-    const disableContextMenu = (e: MouseEvent) => e.preventDefault();
-    document.addEventListener("contextmenu", disableContextMenu);
-    return () => {
-      document.removeEventListener("contextmenu", disableContextMenu);
-    };
-  }, []);
-
+export default async function SportGallery() {
+  const items = await getGalleryImages("sport");
   return (
     <div>
       <Title text="sports" />
-      <div id="photos-container" className="p-5">
-        <LightGallery
-          onInit={() => console.log("LightGallery initialized")}
-          speed={500}
-          plugins={[lgThumbnail, lgZoom]}
-          selector=".lightgallery-item"
-          download={false}
-        >
-          <Masonry
-            breakpointCols={{
-              default: 4,
-              1100: 3,
-              768: 2,
-              500: 1,
-            }}
-            className="flex gap-2"
-            columnClassName=""
-          >
-            {sportItems.map((item, i) => (
-              <a
-                key={i}
-                href={item.src}
-                data-src={item.src}
-                data-sub-html=""
-                className="lightgallery-item block my-2"
-              >
-                <Image
-                  src={item.src}
-                  alt=""
-                  width={600}
-                  height={400}
-                  className="w-full h-auto rounded-lg shadow"
-                  loading="lazy"
-                />
-              </a>
-            ))}
-          </Masonry>
-        </LightGallery>
-      </div>
+      <GalleryGrid items={items} />
     </div>
   );
 }
