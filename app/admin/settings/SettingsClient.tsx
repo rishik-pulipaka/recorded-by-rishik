@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { Montserrat } from "next/font/google";
 
 const mono = Montserrat({ subsets: ["latin"], weight: "400" });
@@ -25,6 +26,7 @@ const DEFAULT_HOURS: BusinessHour[] = DAYS.map((_, i) => ({
 }));
 
 export default function SettingsClient({ initialSettings }: { initialSettings: SettingsData | null }) {
+  const { getToken } = useAuth();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [hours, setHours] = useState<BusinessHour[]>(
@@ -41,11 +43,15 @@ export default function SettingsClient({ initialSettings }: { initialSettings: S
 
   const saveSettings = async () => {
     setSaving(true);
-    const API = process.env.NEXT_PUBLIC_API_URL ?? "";
+    const API = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
     try {
+      const token = await getToken();
       await fetch(`${API}/api/v1/admin/settings`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ business_hours: hours, notification_email: notifEmail }),
       });
       setSaved(true);
@@ -55,12 +61,22 @@ export default function SettingsClient({ initialSettings }: { initialSettings: S
   };
 
   const connectCalendar = async () => {
-    const API = process.env.NEXT_PUBLIC_API_URL ?? "";
+    const API = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
     try {
+      const token = await getToken();
       const res = await fetch(`${API}/api/v1/admin/settings/google-calendar/connect`, {
         method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
       });
+      if (!res.ok) {
+        alert(`Could not initiate Google Calendar connection (${res.status}). Check that you're signed in as the admin user.`);
+        return;
+      }
       const { auth_url } = await res.json();
+      if (!auth_url) {
+        alert("Backend returned no auth URL — check Render logs.");
+        return;
+      }
       window.location.href = auth_url;
     } catch {
       alert("Could not initiate Google Calendar connection. Is the backend running?");
