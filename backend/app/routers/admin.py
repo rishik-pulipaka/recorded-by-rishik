@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlmodel import Session, select, func
 from app.db import get_session
 from app.auth import get_admin_user
@@ -315,6 +316,60 @@ def overview_analytics(session: Session = Depends(get_session)):
 
 # ── Settings ──────────────────────────────────────────────────────────────────
 
+
+class AdminSettingsUpdate(BaseModel):
+    business_hours: list[dict] | None = None
+    notification_email: str | None = None
+
+
+def _default_business_hours_ui() -> list[dict]:
+    # Sun closed; Mon–Sat 09:00–19:00. Matches the shape the /admin/settings
+    # page expects: {day: 0–6, open: "HH:MM", close: "HH:MM", enabled: bool}.
+    # NOTE: stored under key "business_hours_ui" to avoid clobbering the
+    # separate "business_hours" key consumed by CalendarService.get_available_slots
+    # (different shape). Reconciliation is a future task.
+    return [
+        {"day": i, "open": "09:00", "close": "19:00", "enabled": 1 <= i <= 6}
+        for i in range(7)
+    ]
+
+
+def _upsert_setting(session: Session, key: str, value) -> None:
+    row = session.exec(select(Setting).where(Setting.key == key)).first()
+    if row:
+        row.value = value
+        row.updated_at = datetime.now(timezone.utc)
+    else:
+        row = Setting(key=key, value=value)
+    session.add(row)
+    session.commit()
+
+
+@router.get("/settings")
+def get_admin_settings(session: Session = Depends(get_session)):
+    cal = CalendarService(session)
+    bh_row = session.exec(select(Setting).where(Setting.key == "business_hours_ui")).first()
+    email_row = session.exec(select(Setting).where(Setting.key == "notification_email")).first()
+    return {
+        "google_calendar_connected": cal.is_connected(),
+        "calendar_id": None,
+        "business_hours": bh_row.value if bh_row else _default_business_hours_ui(),
+        "notification_email": email_row.value if email_row else None,
+    }
+
+
+@router.patch("/settings")
+def patch_admin_settings(
+    payload: AdminSettingsUpdate,
+    session: Session = Depends(get_session),
+):
+    if payload.business_hours is not None:
+        _upsert_setting(session, "business_hours_ui", payload.business_hours)
+    if payload.notification_email is not None:
+        _upsert_setting(session, "notification_email", payload.notification_email)
+    return get_admin_settings(session)
+
+
 @router.get("/settings/{key}")
 def get_setting(key: str, session: Session = Depends(get_session)):
     setting = session.exec(select(Setting).where(Setting.key == key)).first()
@@ -342,7 +397,7 @@ def calendar_status(session: Session = Depends(get_session)):
     return {"connected": cal.is_connected()}
 
 
-@router.get("/settings/google-calendar/connect")
+@router.post("/settings/google-calendar/connect")
 def calendar_connect(session: Session = Depends(get_session)):
     cal = CalendarService(session)
     url = cal.get_auth_url()
