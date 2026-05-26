@@ -92,11 +92,18 @@ class CalendarService:
         token_data = self._get_setting("google_calendar_token")
         return bool(token_data and token_data.get("refresh_token"))
 
-    def get_auth_url(self) -> str:
+    def get_auth_url(self, login_hint: str | None = None) -> str:
         flow = self._build_flow()
-        auth_url, _ = flow.authorization_url(
-            access_type="offline", include_granted_scopes="true", prompt="consent"
-        )
+        kwargs: dict = {
+            "access_type": "offline",
+            "include_granted_scopes": "true",
+            "prompt": "consent",
+        }
+        if login_hint:
+            # Pre-selects this Google account on the consent screen, so the
+            # admin's browser doesn't default to whatever account is signed in.
+            kwargs["login_hint"] = login_hint
+        auth_url, _ = flow.authorization_url(**kwargs)
         return auth_url
 
     def exchange_code(self, code: str) -> None:

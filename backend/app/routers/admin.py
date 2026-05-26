@@ -398,9 +398,14 @@ def calendar_status(session: Session = Depends(get_session)):
 
 
 @router.post("/settings/google-calendar/connect")
-def calendar_connect(session: Session = Depends(get_session)):
+def calendar_connect(
+    admin: User = Depends(get_admin_user),
+    session: Session = Depends(get_session),
+):
     cal = CalendarService(session)
-    url = cal.get_auth_url()
+    # Pre-fill the Google account chooser with the admin's email so the
+    # OAuth flow doesn't default to whatever account is signed in to Chrome.
+    url = cal.get_auth_url(login_hint=admin.email or None)
     return {"auth_url": url}
 
 
