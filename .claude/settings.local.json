@@ -9,7 +9,8 @@
       "Bash(node --trace-deprecation -e \"require\\('next/dist/compiled/next-server/pages.runtime.dev.js'\\)\")",
       "Bash(npm ls *)",
       "Bash(npm audit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(python -m py_compile backend/app/routers/admin.py backend/app/routers/public.py)"
     ]
   }
 }

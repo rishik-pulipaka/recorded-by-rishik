@@ -78,7 +78,7 @@ export async function uploadOne(filePath, folder, tags = []) {
     asset_folder: folder,
     tags,
     use_filename: true,
-    unique_filename: true,
+    unique_filename: false,
     overwrite: false,
     resource_type: "image",
     chunk_size: 6 * 1024 * 1024,
