@@ -37,19 +37,19 @@ export default function Navbar() {
       <Link href="/">
         <div className="flex gap-3 items-center">
           <div>
-            <h1 className={`text-lg tracking-[14px] lg:text-3xl ${semibold.className}`}>
+            <h1 className={`text-lg tracking-[14px] lg:text-2xl ${semibold.className}`}>
               RECORDED
             </h1>
-            <h1 className={`text-lg tracking-[14.5px] lg:text-3xl ${bold.className}`}>
+            <h1 className={`text-lg tracking-[14.5px] lg:text-2xl ${bold.className}`}>
               BY RISHIK
             </h1>
           </div>
-          <div className="shrink-0 w-[1px] border-white border-solid border-[2px] h-[70px]" />
+          <div className="shrink-0 w-[1px] border-white border-solid border-[1px] h-[70px]" />
         </div>
       </Link>
 
       {/* Desktop nav */}
-      <div className="hidden space-x-10 text-sm tracking-[4px] lg:flex items-center">
+      <div className="hidden space-x-10 text-md tracking-[4px] lg:flex items-center">
         {items.map(({ name, link }) => (
           <Link key={name} href={link}>
             <span className="hover:opacity-60 transition-opacity duration-200">{name}</span>
