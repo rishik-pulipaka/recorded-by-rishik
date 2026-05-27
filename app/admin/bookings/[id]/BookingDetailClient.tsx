@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { Montserrat } from "next/font/google";
 
 const mono = Montserrat({ subsets: ["latin"], weight: "400" });
@@ -60,14 +61,16 @@ export default function BookingDetailClient({ booking: initial }: { booking: Boo
   const [galleryNotes, setGalleryNotes] = useState(initial.deliverable?.notes ?? "");
   const [savingDeliverable, setSavingDeliverable] = useState(false);
 
-  const API = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const { getToken } = useAuth();
+  const API = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
   const updateStatus = async (newStatus: string) => {
     setStatusLoading(true);
     try {
+      const token = await getToken();
       const res = await fetch(`${API}/api/v1/admin/bookings/${booking.id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus }),
       });
       if (res.ok) {
@@ -81,9 +84,10 @@ export default function BookingDetailClient({ booking: initial }: { booking: Boo
     if (!newMessage.trim()) return;
     setSendingMsg(true);
     try {
+      const token = await getToken();
       const res = await fetch(`${API}/api/v1/admin/bookings/${booking.id}/messages`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ body: newMessage }),
       });
       if (res.ok) {
@@ -98,9 +102,10 @@ export default function BookingDetailClient({ booking: initial }: { booking: Boo
   const saveDeliverable = async () => {
     setSavingDeliverable(true);
     try {
+      const token = await getToken();
       const res = await fetch(`${API}/api/v1/admin/bookings/${booking.id}/deliverables`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ gallery_url: galleryUrl, notes: galleryNotes }),
       });
       if (res.ok) {

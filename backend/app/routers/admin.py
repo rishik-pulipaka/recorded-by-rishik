@@ -6,17 +6,22 @@ from sqlmodel import Session, select, func
 from app.db import get_session
 from app.auth import get_admin_user
 from app.models.user import User
-from app.models.booking import Booking, BookingEvent, BookingStatus
-from app.models.message import Message
+from app.models.booking import Booking, BookingAddon, BookingEvent, BookingStatus
 from app.models.deliverable import Deliverable
+from app.models.message import Message
 from app.models.pricing import PricingRule
 from app.models.quote import Quote
 from app.models.settings import Setting
 from app.schemas.booking import (
     BookingRead,
+    BookingDetailRead,
     BookingAdminUpdate,
     BookingEventRead,
     MessageRead,
+    MessageCreate,
+    MessageDetailRead,
+    ClientSummary,
+    AddonSummary,
     DeliverableCreate,
     DeliverableRead,
 )
@@ -47,12 +52,60 @@ def list_bookings(
     return session.exec(q.order_by(Booking.start_time.desc())).all()
 
 
-@router.get("/bookings/{booking_id}", response_model=BookingRead)
+@router.get("/bookings/{booking_id}", response_model=BookingDetailRead)
 def get_booking(booking_id: uuid.UUID, session: Session = Depends(get_session)):
     booking = session.get(Booking, booking_id)
     if not booking or booking.deleted_at is not None:
         raise HTTPException(status_code=404, detail="Booking not found")
-    return booking
+
+    client = session.get(User, booking.client_id)
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    # Addons: join booking_addons → pricing_rules for name
+    addon_rows = session.exec(
+        select(BookingAddon, PricingRule)
+        .join(PricingRule, BookingAddon.pricing_rule_id == PricingRule.id)
+        .where(BookingAddon.booking_id == booking_id)
+    ).all()
+    addons = [AddonSummary(name=rule.name, price=float(addon.price_snapshot)) for addon, rule in addon_rows]
+
+    # Messages with sender name + admin flag
+    msg_rows = session.exec(
+        select(Message, User)
+        .join(User, Message.sender_id == User.id)
+        .where(Message.booking_id == booking_id)
+        .order_by(Message.created_at)
+    ).all()
+    messages = [
+        MessageDetailRead(
+            id=msg.id,
+            sender_name=sender.name,
+            body=msg.body,
+            created_at=msg.created_at,
+            is_admin=sender.role == "admin",
+        )
+        for msg, sender in msg_rows
+    ]
+
+    events = session.exec(
+        select(BookingEvent)
+        .where(BookingEvent.booking_id == booking_id)
+        .order_by(BookingEvent.created_at)
+    ).all()
+
+    deliverable = session.exec(
+        select(Deliverable).where(Deliverable.booking_id == booking_id)
+    ).first()
+
+    return BookingDetailRead(
+        **booking.model_dump(),
+        client=ClientSummary(id=client.id, name=client.name, email=client.email, phone=client.phone),
+        addons=addons,
+        messages=messages,
+        events=events,
+        deliverable=deliverable,
+    )
 
 
 @router.patch("/bookings/{booking_id}", response_model=BookingRead)
@@ -147,6 +200,29 @@ def get_booking_messages(booking_id: uuid.UUID, session: Session = Depends(get_s
         .where(Message.booking_id == booking_id)
         .order_by(Message.created_at)
     ).all()
+
+
+@router.post("/bookings/{booking_id}/messages", response_model=MessageDetailRead, status_code=201)
+def send_message(
+    booking_id: uuid.UUID,
+    payload: MessageCreate,
+    admin: User = Depends(get_admin_user),
+    session: Session = Depends(get_session),
+):
+    booking = session.get(Booking, booking_id)
+    if not booking or booking.deleted_at is not None:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    msg = Message(booking_id=booking_id, sender_id=admin.id, body=payload.body)
+    session.add(msg)
+    session.commit()
+    session.refresh(msg)
+    return MessageDetailRead(
+        id=msg.id,
+        sender_name=admin.name,
+        body=msg.body,
+        created_at=msg.created_at,
+        is_admin=True,
+    )
 
 
 @router.post("/bookings/{booking_id}/deliverables", response_model=DeliverableRead, status_code=201)

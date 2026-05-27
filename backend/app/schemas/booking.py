@@ -90,6 +90,38 @@ class DeliverableRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ── Enriched detail types (used by GET /admin/bookings/{id}) ──────────────────
+
+class ClientSummary(BaseModel):
+    id: uuid.UUID
+    name: str
+    email: str
+    phone: str | None
+
+
+class AddonSummary(BaseModel):
+    name: str
+    price: float
+
+
+class MessageDetailRead(BaseModel):
+    id: uuid.UUID
+    sender_name: str
+    body: str
+    created_at: datetime
+    is_admin: bool
+
+
+class BookingDetailRead(BookingRead):
+    client: ClientSummary
+    addons: list[AddonSummary]
+    messages: list[MessageDetailRead]
+    events: list[BookingEventRead]
+    deliverable: DeliverableRead | None
+
+
+# ── Other public-facing schemas ───────────────────────────────────────────────
+
 class ContactFormSubmission(BaseModel):
     name: str
     email: EmailStr
