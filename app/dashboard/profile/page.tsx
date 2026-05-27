@@ -5,8 +5,6 @@ import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
 
-export const metadata = undefined; // page title handled by layout
-
 const mono = Montserrat({ subsets: ["latin"], weight: "400" });
 const semibold = Montserrat({ subsets: ["latin"], weight: "600" });
 const bold = Montserrat({ subsets: ["latin"], weight: "800" });
