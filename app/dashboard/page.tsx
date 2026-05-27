@@ -66,27 +66,11 @@ export default async function DashboardPage() {
   ) ?? [];
 
   return (
-    <div className={`min-h-screen bg-primary text-secondary px-6 py-10 ${mono.className}`}>
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-8 flex items-start justify-between">
-          <div>
-            <p className="text-xs tracking-[4px] text-white/40 mb-1">PORTAL</p>
-            <h1 className={`text-3xl ${bold.className}`}>My Bookings</h1>
-          </div>
-          <div className="flex gap-3">
-            <Link
-              href="/dashboard/profile"
-              className="text-xs px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/25 text-white/50 hover:text-white transition-all"
-            >
-              Profile
-            </Link>
-            <Link
-              href="/book"
-              className="text-xs px-3 py-1.5 rounded-lg bg-white text-black hover:bg-white/90 transition-colors"
-            >
-              + New booking
-            </Link>
-          </div>
+    <div className={`text-secondary ${mono.className}`}>
+      <div className="max-w-2xl">
+        <div className="mb-8">
+          <p className="text-xs tracking-[4px] text-white/40 mb-1">PORTAL</p>
+          <h1 className={`text-3xl ${bold.className}`}>My Bookings</h1>
         </div>
 
         {!bookings ? (

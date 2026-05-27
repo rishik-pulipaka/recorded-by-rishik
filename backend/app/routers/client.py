@@ -4,15 +4,20 @@ from sqlmodel import Session, select
 from app.db import get_session
 from app.auth import get_current_user
 from app.models.user import User
-from app.models.booking import Booking, BookingEvent
+from app.models.booking import Booking, BookingAddon, BookingEvent
 from app.models.message import Message
 from app.models.deliverable import Deliverable
+from app.models.pricing import PricingRule
 from app.schemas.user import UserRead, UserUpdate
 from app.schemas.booking import (
     BookingRead,
+    BookingDetailRead,
     BookingEventRead,
     MessageCreate,
     MessageRead,
+    MessageDetailRead,
+    ClientSummary,
+    AddonSummary,
     DeliverableRead,
     RescheduleRequest,
 )
@@ -54,7 +59,7 @@ def my_bookings(
     return bookings
 
 
-@router.get("/bookings/{booking_id}", response_model=BookingRead)
+@router.get("/bookings/{booking_id}", response_model=BookingDetailRead)
 def get_booking(
     booking_id: uuid.UUID,
     current_user: User = Depends(get_current_user),
@@ -65,7 +70,49 @@ def get_booking(
         raise HTTPException(status_code=404, detail="Booking not found")
     if booking.client_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not your booking")
-    return booking
+
+    addon_rows = session.exec(
+        select(BookingAddon, PricingRule)
+        .join(PricingRule, BookingAddon.pricing_rule_id == PricingRule.id)
+        .where(BookingAddon.booking_id == booking_id)
+    ).all()
+    addons = [AddonSummary(name=rule.name, price=float(addon.price_snapshot)) for addon, rule in addon_rows]
+
+    msg_rows = session.exec(
+        select(Message, User)
+        .join(User, Message.sender_id == User.id)
+        .where(Message.booking_id == booking_id)
+        .order_by(Message.created_at)
+    ).all()
+    messages = [
+        MessageDetailRead(
+            id=msg.id,
+            sender_name=sender.name,
+            body=msg.body,
+            created_at=msg.created_at,
+            is_admin=sender.role == "admin",
+        )
+        for msg, sender in msg_rows
+    ]
+
+    events = session.exec(
+        select(BookingEvent)
+        .where(BookingEvent.booking_id == booking_id)
+        .order_by(BookingEvent.created_at)
+    ).all()
+
+    deliverable = session.exec(
+        select(Deliverable).where(Deliverable.booking_id == booking_id)
+    ).first()
+
+    return BookingDetailRead(
+        **booking.model_dump(),
+        client=ClientSummary(id=current_user.id, name=current_user.name, email=current_user.email, phone=current_user.phone),
+        addons=addons,
+        messages=messages,
+        events=events,
+        deliverable=deliverable,
+    )
 
 
 @router.get("/bookings/{booking_id}/events", response_model=list[BookingEventRead])
@@ -102,7 +149,7 @@ def get_messages(
     return messages
 
 
-@router.post("/bookings/{booking_id}/messages", response_model=MessageRead, status_code=201)
+@router.post("/bookings/{booking_id}/messages", response_model=MessageDetailRead, status_code=201)
 def send_message(
     booking_id: uuid.UUID,
     payload: MessageCreate,
@@ -120,7 +167,13 @@ def send_message(
     session.add(msg)
     session.commit()
     session.refresh(msg)
-    return msg
+    return MessageDetailRead(
+        id=msg.id,
+        sender_name=current_user.name,
+        body=msg.body,
+        created_at=msg.created_at,
+        is_admin=False,
+    )
 
 
 @router.post("/bookings/{booking_id}/reschedule-request", status_code=204)

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "motion/react";
-import { SignInButton, UserButton, useAuth } from "@clerk/nextjs";
+import { SignInButton, UserButton, useAuth, useUser } from "@clerk/nextjs";
 import { items } from "../data/navigation";
 import { Montserrat } from "next/font/google";
 
@@ -15,6 +15,10 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
+  const role = (user?.publicMetadata as { role?: string } | null)?.role;
+  const dashHref = role === "admin" ? "/admin" : "/dashboard";
+  const dashLabel = role === "admin" ? "admin" : "dashboard";
 
   const closeMenu = () => setIsOpen(false);
 
@@ -57,9 +61,17 @@ export default function Navbar() {
         ))}
 
         {/* Auth */}
-        <div className="ml-4">
+        <div className="ml-4 flex items-center gap-5">
           {!isLoaded ? null : isSignedIn ? (
-            <UserButton />
+            <>
+              <Link
+                href={dashHref}
+                className={`text-sm tracking-[3px] hover:opacity-60 transition-opacity ${semibold.className}`}
+              >
+                {dashLabel}
+              </Link>
+              <UserButton />
+            </>
           ) : (
             <SignInButton mode="modal">
               <button className="text-sm tracking-[3px] border border-white/30 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">
@@ -104,9 +116,20 @@ export default function Navbar() {
               <Link href={link} onClick={closeMenu}>{name}</Link>
             </motion.li>
           ))}
+          {isSignedIn && (
+            <motion.li
+              variants={itemVariants}
+              custom={items.length}
+              initial="closed"
+              animate="open"
+              className="text-center tracking-[4px]"
+            >
+              <Link href={dashHref} onClick={closeMenu}>{dashLabel}</Link>
+            </motion.li>
+          )}
           <motion.li
             variants={itemVariants}
-            custom={items.length}
+            custom={items.length + 1}
             initial="closed"
             animate="open"
             className="text-center pt-2"

@@ -171,6 +171,14 @@ class CalendarService:
         if not service:
             return None
 
+        # Ensure datetimes carry explicit UTC offset so Google Calendar doesn't
+        # misinterpret them as local time (naive datetimes + a timeZone hint
+        # would shift the event by hours).
+        def _utc_iso(dt: datetime) -> str:
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.isoformat()
+
         event = {
             "summary": f"📸 {client.name} — {booking.shoot_type}",
             "description": (
@@ -181,8 +189,8 @@ class CalendarService:
                 f"Location: {booking.location}\n"
                 f"Notes: {booking.special_notes or 'None'}"
             ),
-            "start": {"dateTime": booking.start_time.isoformat(), "timeZone": "America/Los_Angeles"},
-            "end": {"dateTime": booking.end_time.isoformat(), "timeZone": "America/Los_Angeles"},
+            "start": {"dateTime": _utc_iso(booking.start_time)},
+            "end": {"dateTime": _utc_iso(booking.end_time)},
         }
         created = service.events().insert(calendarId="primary", body=event).execute()
         event_id: str = created.get("id", "")
