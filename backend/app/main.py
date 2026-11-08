@@ -52,6 +52,11 @@ def health():
     return {"status": "ok"}
 
 
-@app.get("/api/v1/sentry-test", include_in_schema=False)
-def sentry_test():
-    raise ValueError("Sentry test error — this is intentional")
+# Debug endpoint for verifying Sentry wiring. Registered only outside
+# production: in prod it would be an unauthenticated way for anyone to
+# spam Sentry with errors and burn quota.
+if settings.ENVIRONMENT != "production":
+
+    @app.get("/api/v1/sentry-test", include_in_schema=False)
+    def sentry_test():
+        raise ValueError("Sentry test error — this is intentional")
