@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Optional
-from sqlalchemy import Column
+from sqlalchemy import Column, JSON
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
@@ -16,5 +16,5 @@ class Setting(SQLModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     key: str = Field(unique=True, index=True)
-    value: Optional[Any] = Field(default=None, sa_column=Column(JSONB, nullable=True))
+    value: Optional[Any] = Field(default=None, sa_column=Column(JSONB().with_variant(JSON(), "sqlite"), nullable=True))
     updated_at: datetime = Field(default_factory=_utcnow)

@@ -14,6 +14,7 @@ Business hours are stored under key "business_hours" as:
 
 from datetime import date, datetime, time, timedelta, timezone
 from typing import Any
+from zoneinfo import ZoneInfo
 import json
 from sqlmodel import Session, select
 
@@ -123,6 +124,13 @@ class CalendarService:
 
         service = self._get_service()
 
+        # Business hours are wall-clock times in the business timezone
+        # (e.g. 9:00 America/Los_Angeles), NOT UTC. Building the day window
+        # in UTC shifted the freebusy check and every returned slot by the
+        # UTC offset (7-8 hours), so availability was computed against the
+        # wrong part of the day.
+        tz = ZoneInfo(bh.get("timezone", "America/Los_Angeles"))
+
         current = from_date
         while current <= to_date:
             # Skip days outside business hours
@@ -130,8 +138,8 @@ class CalendarService:
                 current += timedelta(days=1)
                 continue
 
-            day_start = datetime.combine(current, time(bh["start_hour"], 0), tzinfo=timezone.utc)
-            day_end = datetime.combine(current, time(bh["end_hour"], 0), tzinfo=timezone.utc)
+            day_start = datetime.combine(current, time(bh["start_hour"], 0), tzinfo=tz)
+            day_end = datetime.combine(current, time(bh["end_hour"], 0), tzinfo=tz)
 
             if service:
                 try:

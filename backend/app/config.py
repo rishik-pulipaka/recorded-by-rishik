@@ -10,6 +10,12 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
     SENTRY_DSN: str = ""
+    # Redis connection URL (ElastiCache in production). Empty = in-process
+    # cache fallback; see app/services/cache.py.
+    REDIS_URL: str = ""
+    # S3 bucket for deliverable assets. Empty = S3 features disabled.
+    # Credentials/region come from the standard AWS env chain.
+    S3_BUCKET: str = ""
     ENVIRONMENT: str = "development"
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
     # Base URL for this API (used for Google OAuth callback)

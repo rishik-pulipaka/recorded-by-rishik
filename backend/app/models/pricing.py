@@ -3,7 +3,7 @@ import enum
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Optional
-from sqlalchemy import Column
+from sqlalchemy import Column, JSON
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
@@ -32,6 +32,7 @@ class PricingRule(SQLModel, table=True):
     active: bool = Field(default=True)
     sort_order: int = Field(default=0)
     # Arbitrary JSON for modifier rules (e.g. {"type": "percentage", "value": 15})
-    meta: Optional[Any] = Field(default=None, sa_column=Column(JSONB, nullable=True))
+    # JSONB on Postgres; plain JSON elsewhere (lets the test suite run on SQLite)
+    meta: Optional[Any] = Field(default=None, sa_column=Column(JSONB().with_variant(JSON(), "sqlite"), nullable=True))
     created_at: datetime = Field(default_factory=_utcnow)
     updated_at: datetime = Field(default_factory=_utcnow)
