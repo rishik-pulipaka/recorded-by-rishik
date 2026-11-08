@@ -78,12 +78,6 @@ function formatDate(dateStr: string) {
   });
 }
 
-function isWeekend(dateStr: string) {
-  if (!dateStr) return false;
-  const d = new Date(dateStr + "T12:00:00").getDay();
-  return d === 0 || d === 6;
-}
-
 const today = new Date().toISOString().split("T")[0];
 const STEPS = ["Session Type", "Package", "Add-ons", "Date & Time", "Location", "Your Info", "Review"];
 
@@ -423,7 +417,6 @@ function Step4({
   onBack: () => void;
 }) {
   const slots = generateSlots(date);
-  const weekend = isWeekend(date);
   const canNext = !!date && !!timeSlot;
 
   return (

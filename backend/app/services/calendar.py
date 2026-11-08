@@ -15,7 +15,6 @@ Business hours are stored under key "business_hours" as:
 from datetime import date, datetime, time, timedelta, timezone
 from typing import Any
 from zoneinfo import ZoneInfo
-import json
 from sqlmodel import Session, select
 
 from app.config import settings
@@ -204,7 +203,6 @@ class CalendarService:
         event_id: str = created.get("id", "")
 
         # Persist event ID on booking
-        from datetime import datetime, timezone
         booking.calendar_event_id = event_id
         booking.updated_at = datetime.now(timezone.utc)
         self._session.add(booking)

@@ -66,7 +66,7 @@ Resend ────────────────────────�
 **Auth flow:**
 1. User signs in via Clerk on the Next.js frontend
 2. Clerk issues a JWT with `metadata.role` claim
-3. Next.js middleware (`middleware.ts`) checks the claim — redirects non-admins away from `/admin/*`
+3. Next.js middleware (`proxy.ts`) checks the claim — redirects non-admins away from `/admin/*`
 4. API calls from the frontend include `Authorization: Bearer <token>`
 5. FastAPI `auth.py` fetches Clerk JWKS (TTL-cached 10 min), verifies the JWT, upserts the user row on first login
 
@@ -186,12 +186,13 @@ See `SECRETS_TODO.md` for step-by-step instructions. Summary:
 │   │   ├── models/         # SQLModel table definitions
 │   │   ├── schemas/        # Pydantic request/response schemas
 │   │   ├── routers/        # public, client, admin route handlers
-│   │   ├── services/       # QuoteEngine, CalendarService, EmailService
+│   │   ├── services/       # QuoteEngine, CalendarService, EmailService, cache, storage
 │   │   └── seed.py         # Default pricing rules
+│   ├── tests/              # pytest suite (unit + API integration)
 │   ├── alembic/            # Migrations (SQL DDL here for resume)
 │   ├── Dockerfile
 │   └── render.yaml
-├── middleware.ts            # Clerk route protection
+├── proxy.ts                 # Clerk route protection (middleware)
 ├── .env.example
 └── SECRETS_TODO.md
 ```

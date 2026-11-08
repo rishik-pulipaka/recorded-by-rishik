@@ -375,7 +375,7 @@ def funnel_analytics(session: Session = Depends(get_session)):
 
 @router.get("/analytics/overview")
 def overview_analytics(session: Session = Depends(get_session)):
-    from datetime import date, timedelta
+    from datetime import date
     today = date.today()
     seven_days = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0)
     month_start = today.replace(day=1)

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import Link from "next/link";
 import { Montserrat } from "next/font/google";
 
 const mono = Montserrat({ subsets: ["latin"], weight: "400" });
