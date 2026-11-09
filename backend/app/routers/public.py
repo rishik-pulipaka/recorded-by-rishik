@@ -1,14 +1,14 @@
 from datetime import date
 from typing import Annotated
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import RedirectResponse
 from sqlmodel import Session, select
 from app.config import settings as app_settings
 from app.db import get_session
 from app.models.pricing import PricingRule
 from app.models.quote import Quote
-from app.models.booking import Booking, BookingAddon, BookingEvent, BookingStatus
+from app.models.booking import Booking, BookingEvent, BookingStatus
 from app.models.user import User
 from app.schemas.pricing import PricingRuleRead
 from app.schemas.quote import QuoteRequest, QuoteResponse, AvailabilitySlot

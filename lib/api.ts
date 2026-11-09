@@ -1,3 +1,5 @@
+// API client for the FastAPI backend. Only the two calls the site
+// actually makes live here: submitting a booking and the contact form.
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
 async function apiFetch<T>(
@@ -14,40 +16,6 @@ async function apiFetch<T>(
   }
   if (res.status === 204) return null as T;
   return res.json() as Promise<T>;
-}
-
-export async function getPricing() {
-  try {
-    return await apiFetch<unknown[]>("/api/v1/pricing", {
-      next: { revalidate: 300 },
-    });
-  } catch {
-    return null;
-  }
-}
-
-export async function createQuote(data: {
-  session_id: string;
-  shoot_type: string;
-  package_id: string;
-  addon_ids: string[];
-  date: string;
-  location: string;
-}) {
-  return apiFetch("/api/v1/quotes", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-}
-
-export async function getAvailability(from: string, to: string) {
-  try {
-    return await apiFetch<{ start: string; end: string; available: boolean }[]>(
-      `/api/v1/availability?from=${from}&to=${to}`
-    );
-  } catch {
-    return null;
-  }
 }
 
 export async function submitBooking(data: unknown) {

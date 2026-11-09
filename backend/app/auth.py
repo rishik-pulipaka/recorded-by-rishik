@@ -4,7 +4,6 @@ from jose import jwt, JWTError
 import httpx
 from cachetools import TTLCache
 from sqlmodel import Session, select
-from datetime import datetime, timezone
 from app.db import get_session
 from app.config import settings
 
@@ -149,16 +148,3 @@ async def get_admin_user(
     if current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return current_user
-
-
-async def get_optional_user(
-    credentials: HTTPAuthorizationCredentials | None = Depends(HTTPBearer(auto_error=False)),
-    session: Session = Depends(get_session),
-):
-    """Returns the current user or None for optional auth endpoints."""
-    if credentials is None:
-        return None
-    try:
-        return await get_current_user(credentials, session)
-    except HTTPException:
-        return None
