@@ -14,3 +14,5 @@ google-auth-httplib2==0.2.0
 python-multipart==0.0.20
 email-validator==2.2.0
 cachetools==5.5.0
+redis==5.2.1
+boto3==1.35.90

@@ -16,16 +16,29 @@ from app.schemas.booking import BookingCreate, BookingRead, ContactFormSubmissio
 from app.services.quote_engine import QuoteEngine
 from app.services.calendar import CalendarService
 from app.services.email import EmailService
+from app.services import cache
 
 router = APIRouter()
+
+PRICING_CACHE_KEY = "pricing:active"
+PRICING_CACHE_TTL = 300  # seconds; admin pricing edits invalidate immediately
 
 
 @router.get("/pricing", response_model=list[PricingRuleRead])
 def get_pricing(session: Session = Depends(get_session)):
+    cached = cache.get_json(PRICING_CACHE_KEY)
+    if cached is not None:
+        return [PricingRuleRead(**item) for item in cached]
     rules = session.exec(
         select(PricingRule).where(PricingRule.active == True).order_by(PricingRule.sort_order)  # noqa: E712
     ).all()
-    return rules
+    result = [PricingRuleRead.model_validate(rule) for rule in rules]
+    cache.set_json(
+        PRICING_CACHE_KEY,
+        [r.model_dump(mode="json") for r in result],
+        PRICING_CACHE_TTL,
+    )
+    return result
 
 
 @router.post("/quotes", response_model=QuoteResponse)
@@ -38,7 +51,10 @@ def create_quote(req: QuoteRequest, session: Session = Depends(get_session)):
         session_id=req.session_id,
         user_id=req.user_id,
         shoot_type=req.shoot_type,
-        package_id=req.package_id,
+        # Quote.package_id is a string column; the request schema carries a
+        # UUID. Convert explicitly instead of relying on the Postgres
+        # driver's implicit UUID adaptation (SQLite cannot bind UUIDs).
+        package_id=str(req.package_id),
         addons=[str(aid) for aid in req.addon_ids],
         total=quote_response.total,
         valid_until=quote_response.valid_until,
@@ -59,8 +75,17 @@ def get_availability(
     to_date: Annotated[date, Query(alias="to")],
     session: Session = Depends(get_session),
 ):
+    # Short TTL: availability changes as bookings confirm (which creates a
+    # Google Calendar event), so this only absorbs bursts, never goes stale
+    # for long.
+    cache_key = f"availability:{from_date.isoformat()}:{to_date.isoformat()}"
+    cached = cache.get_json(cache_key)
+    if cached is not None:
+        return [AvailabilitySlot(**item) for item in cached]
     cal = CalendarService(session)
-    return cal.get_available_slots(from_date, to_date)
+    slots = cal.get_available_slots(from_date, to_date)
+    cache.set_json(cache_key, [s.model_dump(mode="json") for s in slots], 120)
+    return slots
 
 
 def _frontend_origin() -> str:

@@ -3,7 +3,7 @@ import enum
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Optional
-from sqlalchemy import Column
+from sqlalchemy import Column, JSON
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
@@ -62,6 +62,6 @@ class BookingEvent(SQLModel, table=True):
     booking_id: uuid.UUID = Field(foreign_key="bookings.id", index=True)
     # e.g. "status_changed", "note_added", "deposit_paid", "calendar_event_created"
     event_type: str
-    payload: Optional[Any] = Field(default=None, sa_column=Column(JSONB, nullable=True))
+    payload: Optional[Any] = Field(default=None, sa_column=Column(JSONB().with_variant(JSON(), "sqlite"), nullable=True))
     created_by: Optional[uuid.UUID] = Field(default=None, foreign_key="users.id")
     created_at: datetime = Field(default_factory=_utcnow)

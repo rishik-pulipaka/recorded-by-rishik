@@ -21,6 +21,10 @@ services:
         sync: false
       - key: SENTRY_DSN
         sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: S3_BUCKET
+        sync: false
       - key: ENVIRONMENT
         value: production
       - key: ALLOWED_ORIGINS

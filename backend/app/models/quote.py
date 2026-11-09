@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Optional
-from sqlalchemy import Column
+from sqlalchemy import Column, JSON
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
@@ -21,7 +21,7 @@ class Quote(SQLModel, table=True):
     shoot_type: str
     package_id: Optional[str] = Field(default=None)
     # Full add-on selection stored as JSON snapshot
-    addons: Optional[Any] = Field(default=None, sa_column=Column(JSONB, nullable=True))
+    addons: Optional[Any] = Field(default=None, sa_column=Column(JSONB().with_variant(JSON(), "sqlite"), nullable=True))
     total: Decimal = Field(default=Decimal("0.00"), decimal_places=2, max_digits=10)
     valid_until: datetime
     # Set when client converts the quote to a booking

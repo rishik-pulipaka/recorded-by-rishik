@@ -29,6 +29,9 @@ from app.schemas.pricing import PricingRuleCreate, PricingRuleRead, PricingRuleU
 from app.schemas.user import UserRead
 from app.services.calendar import CalendarService
 from app.services.email import EmailService
+from app.services import cache, storage
+from app.schemas.upload import PresignRequest, PresignResponse
+from app.routers.public import PRICING_CACHE_KEY
 
 router = APIRouter(dependencies=[Depends(get_admin_user)])
 
@@ -301,6 +304,7 @@ def create_pricing_rule(
     session.add(rule)
     session.commit()
     session.refresh(rule)
+    cache.delete(PRICING_CACHE_KEY)
     return rule
 
 
@@ -319,6 +323,7 @@ def update_pricing_rule(
     session.add(rule)
     session.commit()
     session.refresh(rule)
+    cache.delete(PRICING_CACHE_KEY)
     return rule
 
 
@@ -331,6 +336,20 @@ def delete_pricing_rule(rule_id: uuid.UUID, session: Session = Depends(get_sessi
     rule.updated_at = datetime.now(timezone.utc)
     session.add(rule)
     session.commit()
+    cache.delete(PRICING_CACHE_KEY)
+
+
+# ── Uploads (S3) ────────────────────────────────────────────────────────────
+
+@router.post("/uploads/presign", response_model=PresignResponse)
+def presign_upload(payload: PresignRequest):
+    """Presigned S3 PUT URL for a deliverable asset. The browser uploads
+    bytes straight to S3; this API never proxies file content."""
+    if not storage.s3_enabled():
+        raise HTTPException(status_code=503, detail="S3 storage is not configured")
+    key = storage.make_key(payload.filename)
+    url = storage.presign_upload(key, payload.content_type)
+    return PresignResponse(key=key, upload_url=url, expires_in=900)
 
 
 # ── Analytics ─────────────────────────────────────────────────────────────────
